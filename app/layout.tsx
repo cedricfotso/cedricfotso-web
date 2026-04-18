@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
 import Image from "next/image";
+import Navigation from '../components/Navigation'; // Import du nouveau composant
 
 export const metadata: Metadata = {
   title: 'Cédric Fotso — Créateur de sites Web & Designer',
@@ -12,28 +13,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <body>
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/85 backdrop-blur-md border-b border-[#F0EDE8]">
-          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-              <Link href="/" className="flex items-center">
-                <Image
-                  src="/images/cedricfotso.svg"
-                  alt="Cédric Fotso"
-                  width={140}
-                  height={32}
-                  priority
-                  className="h-8 w-auto"
-                />
-              </Link>
-            <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-              <Link href="/projets" className="text-neutral-500 hover:text-[#0A0A0A] transition-colors">Projets</Link>
-              <Link href="/a-propos" className="text-neutral-500 hover:text-[#0A0A0A] transition-colors">À propos</Link>
-              <Link href="/blog" className="text-neutral-500 hover:text-[#0A0A0A] transition-colors">Blog</Link>
-              <Link href="/contact" className="bg-[#D85A30] text-white font-semibold px-5 py-2 rounded-full text-sm hover:bg-[#C14E27] transition-colors">
-                Travaillons ensemble
-              </Link>
-            </div>
-          </div>
-        </nav>
+        {/* Navigation interactive (Mobile + Desktop) */}
+        <Navigation />
 
         <div className="pt-16">{children}</div>
 
