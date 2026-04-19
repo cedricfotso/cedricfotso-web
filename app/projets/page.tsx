@@ -1,82 +1,66 @@
-import { fetchGraphQL } from '@/lib/graphql/client';
-import { GET_PROJECTS } from '@/lib/graphql/queries';
-import Link from 'next/link';
+import Link from "next/link"
+import { getAllProjects } from "@/lib/queries"
 
-type Project = { title: string; slug: string; tagline: string; secteur: string; marche: string; };
-type ProjectsData = { projets: { nodes: Project[] } };
+export const revalidate = 300
+
+export const metadata = {
+  title: "Projets",
+  description:
+    "Sélection de projets web — sites vitrines, e-commerce et plateformes — conçus sur mesure pour des marques en Afrique, Europe et Amérique du Nord.",
+}
 
 export default async function ProjetsPage() {
-  let projects: Project[] = [];
-
-  // Le bloc try/catch empêche la page de crasher si WordPress est inaccessible
-  try {
-    const data = await fetchGraphQL<ProjectsData>(GET_PROJECTS);
-    projects = data?.projets?.nodes || [];
-  } catch (error) {
-    console.error("Erreur de connexion GraphQL sur la page projets :", error);
-  }
+  const projets = await getAllProjects()
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-32 lg:py-48">
-      
-      {/* En-tête de page - Style minimaliste */}
-      <div className="mb-20 animate-fade-in">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 mb-8">
-          <span className="w-2 h-2 rounded-full bg-black" />
-          <span className="text-xs font-mono font-medium text-neutral-600 uppercase tracking-widest">
-            Portfolio
-          </span>
-        </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-black mb-6">
-          Projets
-        </h1>
-        <p className="text-lg text-neutral-500 max-w-xl font-light leading-relaxed">
-          Des plateformes et systèmes web conçus pour générer de la visibilité, de la crédibilité et des résultats.
-        </p>
-      </div>
+    <main className="pt-32 pb-24 md:pt-40 md:pb-32">
+      <div className="mx-auto max-w-6xl px-6">
+        <header className="mb-16 max-w-3xl">
+          <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
+            Projets
+          </p>
+          <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+            Des sites pensés avant d&apos;être codés.
+          </h1>
+          <p className="mt-6 text-lg text-neutral-300">
+            Sélection de travaux récents — vitrines, e-commerce, plateformes métier.
+            Chaque projet commence par une stratégie, pas par un template.
+          </p>
+        </header>
 
-      {/* Liste des projets */}
-      <div className="grid gap-4 animate-fade-in animation-delay-200">
-        {projects.length > 0 ? (
-          projects.map((p) => (
-            <Link
-              key={p.slug}
-              href={`/projets/${p.slug}`}
-              className="group grid md:grid-cols-[1fr_auto] items-center gap-8 rounded-lg p-8 border border-[#EAEAEA] hover:border-black transition-colors bg-white shadow-sm hover:shadow-md"
-            >
-              <div>
-                <div className="flex items-center gap-3 mb-3">
-                  {p.secteur && (
-                    <span className="text-[10px] font-mono font-medium uppercase tracking-wider px-2 py-1 rounded bg-neutral-50 border border-[#EAEAEA] text-neutral-600 group-hover:text-brand group-hover:border-brand/30 transition-colors">
-                      {p.secteur}
-                    </span>
-                  )}
-                  {p.marche && (
-                    <>
-                      <span className="text-neutral-300">/</span>
-                      <span className="text-xs text-neutral-500 font-medium">{p.marche}</span>
-                    </>
-                  )}
-                </div>
-                <h2 className="text-2xl font-semibold tracking-tight text-black group-hover:text-brand transition-colors">{p.title}</h2>
-                <p className="text-neutral-500 text-sm mt-2 leading-relaxed max-w-2xl">{p.tagline}</p>
-              </div>
-              
-              {/* Flèche d'interaction discrète */}
-              <span className="text-2xl text-neutral-300 group-hover:text-black group-hover:translate-x-1 transition-all md:block hidden font-light">
-                →
-              </span>
-            </Link>
-          ))
+        {projets.length === 0 ? (
+          <p className="py-24 text-center text-neutral-500">
+            Connexion à la base de données en cours ou indisponible.
+          </p>
         ) : (
-          // Message de secours élégant si la base de données est indisponible
-          <div className="p-12 border border-dashed border-[#EAEAEA] rounded-lg text-center bg-neutral-50">
-            <p className="text-neutral-500 font-mono text-sm">
-              Connexion à la base de données en cours ou indisponible.
-            </p>
-          </div>
+          <ul className="grid gap-6 md:grid-cols-2">
+            {projets.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={`/projets/${p.slug}`}
+                  className="group block rounded-2xl border border-border p-8 transition hover:bg-white/5"
+                >
+                  {p.secteur ? (
+                    <p className="mb-4 text-xs uppercase tracking-widest text-neutral-500">
+                      {p.secteur}
+                      {p.marche ? ` · ${p.marche}` : ""}
+                    </p>
+                  ) : null}
+                  <h2 className="text-2xl font-semibold tracking-tight transition group-hover:text-white">
+                    {p.title}
+                  </h2>
+                  {p.tagline ? (
+                    <p className="mt-3 text-neutral-400">{p.tagline}</p>
+                  ) : null}
+                  <span className="mt-6 inline-block text-sm text-neutral-500 transition group-hover:text-white">
+                    Voir le projet →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </main>
-  );
+  )
 }

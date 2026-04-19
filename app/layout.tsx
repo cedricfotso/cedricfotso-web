@@ -1,50 +1,41 @@
-// app/layout.tsx
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import './globals.css';
-import Image from "next/image";
-import Navigation from '@/components/layout/Navigation';
+import type { Metadata } from "next"
+import { Inter_Tight } from "next/font/google"
+import { GridLines } from "@/components/layout/GridLines"
+import { Header } from "@/components/layout/Header"
+import { Footer } from "@/components/layout/Footer"
+import "./globals.css"
+
+const interTight = Inter_Tight({
+	subsets: ["latin"],
+	weight: ["400", "500", "600"],
+	variable: "--font-inter-tight",
+	display: "swap",
+})
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cedricfotso.com"
 
 export const metadata: Metadata = {
-  title: 'Cédric Fotso — Créateur de sites Web & Designer',
-  description: 'WordPress Avancé · UX/UI · SEO/GEO · Design graphique. Je conçois des systèmes web performants.',
-};
+	metadataBase: new URL(siteUrl),
+	title: {
+		default: "Cédric Fotso — Créateur de sites web, Designer, Consultant en stratégie digitale",
+		template: "%s · Cédric Fotso",
+	},
+	description: "Freelance à Douala. Sites web, identités visuelles et stratégies digitales pour structures privées et institutions.",
+	openGraph: { type: "website", locale: "fr_FR", url: siteUrl, siteName: "Cédric Fotso" },
+	twitter: { card: "summary_large_image" },
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="fr">
-      <body className="antialiased min-h-screen flex flex-col">
-        <Navigation />
-
-        <div className="flex-grow pt-16">{children}</div>
-
-        <footer className="border-t border-[#EAEAEA] mt-0">
-  <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-    
-    <div className="flex items-center gap-8">
-      <Image
-        src="/images/cedricfotso.svg"
-        alt="Logo Cédric Fotso"
-        width={20}
-        height={20}
-      />
-      <nav className="flex gap-6 text-sm text-neutral-500">
-        <Link href="/projets" className="hover:text-black transition-colors">Projets</Link>
-        <Link href="/a-propos" className="hover:text-black transition-colors">À propos</Link>
-        <Link href="/blog" className="hover:text-black transition-colors">Blog</Link>
-      </nav>
-    </div>
-
-    <div className="flex items-center gap-6 text-xs text-neutral-400">
-      <a href="mailto:mr@cedricfotso.com" className="hover:text-black transition-colors">
-        mr@cedricfotso.com
-      </a>
-      <span>© {new Date().getFullYear()} Cédric Fotso</span>
-    </div>
-
-  </div>
-</footer>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="fr" className={interTight.variable}>
+			<body className="min-h-screen bg-background-1 text-foreground">
+				<GridLines />
+				<div className="relative z-10 flex min-h-screen flex-col">
+					<Header />
+					<main className="flex-1">{children}</main>
+					<Footer />
+				</div>
+			</body>
+		</html>
+	)
 }

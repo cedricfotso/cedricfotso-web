@@ -1,4 +1,4 @@
-import Image from "next/image"
+﻿import Image from "next/image"
 import Link from "next/link"
 import type { FeaturedProject } from "@/lib/queries"
 
@@ -41,7 +41,7 @@ export function ProjectCard({ projet, priority = false }: Props) {
           <p className="mt-3 text-neutral-400">{projet.tagline}</p>
         ) : null}
         <span className="mt-6 inline-block text-sm text-neutral-500 transition group-hover:text-white">
-          Lire l&apos;étude →
+          Lire l'étude →
         </span>
       </div>
     </Link>

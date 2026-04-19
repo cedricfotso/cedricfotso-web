@@ -1,19 +1,16 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
+
+const wpHost = process.env.NEXT_PUBLIC_WP_HOST ?? "cms.cedricfotso.com"
 
 const nextConfig: NextConfig = {
+  reactStrictMode: true,
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cedricfotso.com",
-        pathname: "/wp-content/uploads/**",
-      },
-      {
-        protocol: "https",
-        hostname: "secure.gravatar.com",
-      },
+      { protocol: "https", hostname: wpHost },
+      { protocol: "https", hostname: "secure.gravatar.com" },
     ],
   },
-};
+  experimental: { optimizePackageImports: ["framer-motion"] },
+}
 
-export default nextConfig;
+export default nextConfig

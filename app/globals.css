@@ -1,51 +1,37 @@
-/* app/globals.css */
 @import "tailwindcss";
 
 @theme {
-  /* Nos Design Tokens stricts */
-  --color-brand: #D85A30;
-  --color-brand-hover: #C14E27;
-  
-  /* Typographie système (Geist) */
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+	--color-background-1: #ffffff;
+	--color-background-2: #fafaf8;
+	--color-foreground: #1c1c1c;
+	--color-muted: #6b6b6b;
+	--color-border: #ececec;
+	--color-border-hover: #d4d4d4;
+	--color-brand: #d85a30;
+	--color-brand-hover: #c04a22;
+	--color-brand-soft: #fbeee7;
+
+	--font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+
+	--container-site: 1160px;
 }
 
 @layer base {
-:root {
-  --background: #FAFAFA;   /* blanc cassé Vercel, pas blanc pur */
-  --foreground: #000000;
-  --border: #EAEAEA;
+	html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+	body { background-color: var(--color-background-1); color: var(--color-foreground); font-family: var(--font-sans); font-feature-settings: "cv11","ss01"; line-height: 1.6; }
+	::selection { background-color: var(--color-brand-soft); color: var(--color-brand-hover); }
+	h1,h2,h3,h4 { font-weight: 500; letter-spacing: -0.015em; line-height: 1.2; }
+	a { color: inherit; }
 }
 
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  /* Sélection de texte personnalisée avec ton orange */
-  ::selection {
-    background-color: var(--color-brand);
-    color: #FFFFFF;
-  }
-}
-
-/* Animations utilitaires pour les apparitions en douceur */
 @layer utilities {
-  .animate-fade-in {
-    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    opacity: 0;
-  }
-  
-  .animation-delay-100 { animation-delay: 100ms; }
-  .animation-delay-200 { animation-delay: 200ms; }
-  .animation-delay-300 { animation-delay: 300ms; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+	.label-caps { font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-muted); }
+	.site-container { max-width: var(--container-site); margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
+	.prose-cf p { margin-top: 1em; color: var(--color-foreground); }
+	.prose-cf h2 { margin-top: 2em; font-size: 24px; }
+	.prose-cf h3 { margin-top: 1.5em; font-size: 20px; }
+	.prose-cf a { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; }
+	.prose-cf ul { margin-top: 1em; list-style: disc; padding-left: 1.25em; }
+	.prose-cf blockquote { margin-top: 1.5em; border-left: 2px solid var(--color-brand); padding-left: 1em; color: var(--color-muted); font-size: 18px; }
+	@media (max-width: 640px) { .site-container { padding-left: 16px; padding-right: 16px; } }
 }
