@@ -1,8 +1,8 @@
+// app/page.tsx
 import { fetchGraphQL } from '@/lib/graphql/client';
 import { GET_PROJECTS } from '@/lib/graphql/queries';
 import Link from 'next/link';
-import Image from 'next/image';
-import FadeIn from '@/components/FadeIn';
+import ProjectCard from '@/components/ui/ProjectCard';
 
 type Project = { 
   title: string; 
@@ -16,172 +16,128 @@ type Project = {
     }
   };
 };
+
 type ProjectsData = { projets: { nodes: Project[] } };
 
 export default async function HomePage() {
-  let data;
   let featured: Project[] = [];
 
   try {
-    data = await fetchGraphQL<ProjectsData>(GET_PROJECTS);
-    // Sécurisation : on vérifie que data, projets et nodes existent avant le slice
+    const data = await fetchGraphQL<ProjectsData>(GET_PROJECTS);
     featured = data?.projets?.nodes?.slice(0, 3) || [];
   } catch (error) {
-    console.error("Erreur lors de la récupération des projets sur la page d'accueil :", error);
-    // featured reste un tableau vide [] en cas d'erreur
+    console.error("Erreur GraphQL :", error);
   }
 
   return (
-    <main>
-      {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-24 pb-32 overflow-hidden">
-        <div className="max-w-4xl">
-          <FadeIn delay={0.1}>
-            <div className="flex items-center gap-3 mb-8">
-              <span className="w-2 h-2 rounded-full bg-[#D85A30]" />
-              <span className="text-sm font-semibold text-neutral-500 uppercase tracking-widest">
-                Créateur de sites Web & Designer
-              </span>
-            </div>
-          </FadeIn>
-          
-          <FadeIn delay={0.2}>
-            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-extrabold leading-[1.05] tracking-tight mb-8 text-[#0A0A0A]">
-              Je construis des sites qui <em className="text-[#D85A30] not-italic signature font-medium">travaillent</em> pour vous.
-            </h1>
-          </FadeIn>
-
-          <FadeIn delay={0.3}>
-            <p className="text-xl md:text-2xl font-light text-neutral-500 max-w-2xl mb-12 leading-relaxed tracking-wide">
-              WordPress avancé · UX/UI · SEO/GEO · Design graphique. Des plateformes qui génèrent de la visibilité, de la crédibilité et des clients — pas juste un site.
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.4}>
-            <div className="flex flex-wrap items-center gap-4">
-              <Link href="/projets" className="bg-[#D85A30] text-white font-semibold px-8 py-4 rounded-full hover:bg-[#C14E27] shadow-lg shadow-[#D85A30]/20 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                Voir mes projets
-              </Link>
-              <Link href="/contact" className="text-[#0A0A0A] font-semibold px-8 py-4 rounded-full border border-[#F0EDE8] hover:border-[#D85A30] hover:text-[#D85A30] transition-colors">
-                Demander un devis →
-              </Link>
-            </div>
-          </FadeIn>
-        </div>
-
-        <FadeIn delay={0.6}>
-          <div className="grid grid-cols-3 gap-8 mt-24 pt-12 border-t border-[#F0EDE8] max-w-lg">
-            {[
-              { n: '15+', l: 'Projets livrés' },
-              { n: '8+', l: "Ans d'expérience" },
-              { n: '5', l: 'Pays' },
-            ].map((s) => (
-              <div key={s.l}>
-                <p className="text-4xl font-black tracking-tighter text-[#D85A30]">{s.n}</p>
-                <p className="text-sm font-medium text-neutral-400 mt-2 uppercase tracking-wide">{s.l}</p>
-              </div>
-            ))}
+    <main className="flex flex-col gap-32 pb-32">
+      
+      {/* Hero Section - Vercel Style (Minimaliste, contraste élevé) */}
+      <section className="max-w-6xl mx-auto px-6 pt-32 lg:pt-48">
+        <div className="max-w-4xl animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 mb-8">
+            <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+            <span className="text-xs font-mono font-medium text-neutral-600 uppercase tracking-widest">
+              Créateur de sites web & Designer
+            </span>
           </div>
-        </FadeIn>
-      </section>
-
-      {/* Services */}
-      <section className="bg-[#FAFAF9]">
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <FadeIn>
-            <div className="flex items-start justify-between mb-16 flex-wrap gap-6">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">Ce que je conçois</h2>
-              <p className="text-neutral-500 max-w-sm text-lg font-light leading-relaxed">
-                Chaque projet est un système cohérent entre design, technologie et stratégie.
-              </p>
-            </div>
-          </FadeIn>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { n: '01', titre: 'Sites sur mesure', desc: 'Vitrines, plateformes, landing pages. WordPress hautement personnalisé.' },
-              { n: '02', titre: 'E-commerce', desc: 'WooCommerce, Mobile Money, paiements internationaux.' },
-              { n: '03', titre: 'Systèmes web', desc: 'Multi-sites, écosystèmes, intégrations complexes.' },
-              { n: '04', titre: 'UX/UI & Identité', desc: "Design d'interface, identité visuelle, expérience utilisateur." },
-            ].map((s, index) => (
-              <FadeIn key={s.n} delay={index * 0.1}>
-                <div className="bg-white rounded-2xl p-8 border border-[#F0EDE8] hover:border-[#D85A30] transition-colors h-full group">
-                  <span className="text-sm font-bold text-[#D85A30] tracking-widest">{s.n}</span>
-                  <h3 className="text-xl font-bold mt-4 mb-3 group-hover:text-[#D85A30] transition-colors">{s.titre}</h3>
-                  <p className="text-neutral-500 text-sm leading-relaxed">{s.desc}</p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
+          <h1 className="text-5xl md:text-7xl font-bold leading-tight tracking-tighter text-black mb-6">
+            Je construis des sites qui <br className="hidden md:block"/>
+            <span className="text-brand">travaillent</span> pour vous.
+          </h1>
 
-      {/* Projets sélectionnés */}
-      <section className="max-w-6xl mx-auto px-6 py-24">
-        <FadeIn>
-          <div className="flex items-center justify-between mb-16 flex-wrap gap-4">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight">Projets sélectionnés</h2>
-            <Link href="/projets" className="text-sm font-semibold hover:underline text-[#D85A30] uppercase tracking-wider">
-              Voir tous les projets →
+          <p className="text-lg md:text-xl text-neutral-500 max-w-2xl mb-10 leading-relaxed font-light">
+            De l'architecture WordPress avancée au design d'interface. Des systèmes digitaux conçus pour la performance, la visibilité et la conversion.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/contact" className="bg-black text-white text-sm font-medium px-6 py-3 rounded-md hover:bg-brand transition-colors shadow-sm">
+              Démarrer un projet
+            </Link>
+            <Link href="/projets" className="bg-white text-black text-sm font-medium px-6 py-3 rounded-md border border-[#EAEAEA] hover:border-black transition-colors">
+              Explorer le portfolio
             </Link>
           </div>
-        </FadeIn>
-        
-        <div className="grid md:grid-cols-3 gap-6">
-          {featured.map((p, index) => (
-            <FadeIn key={p.slug} delay={index * 0.15}>
-              <Link href={`/projets/${p.slug}`} className="group block rounded-2xl overflow-hidden border border-[#F0EDE8] hover:border-[#D85A30] transition-all hover:-translate-y-2 bg-white shadow-sm hover:shadow-xl hover:shadow-[#D85A30]/10 duration-500">
-                <div className="h-64 relative flex items-end p-6 bg-gradient-to-br from-[#FFF4F0] via-[#FFE5D9] to-[#FFD4BE] overflow-hidden">
-                  
-                  {/* Image dynamique avec fallback */}
-                  {p.featuredImage?.node?.sourceUrl && (
-                    <Image 
-                      src={p.featuredImage.node.sourceUrl}
-                      alt={p.featuredImage.node.altText || p.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  )}
-                  
-                  {/* Overlay subtil pour garantir la lisibilité du tag */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-80" />
+        </div>
 
-                  <span className="relative z-10 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full bg-white/95 text-[#D85A30] shadow-sm backdrop-blur-sm">
-                    {p.secteur || 'Projet'}
-                  </span>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-extrabold text-xl mb-2 group-hover:text-[#D85A30] transition-colors">{p.title}</h3>
-                  <p className="text-neutral-500 text-sm leading-relaxed">{p.tagline}</p>
-                </div>
-              </Link>
-            </FadeIn>
+        {/* Chiffres clés en police Mono */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-10 border-t border-[#EAEAEA] animate-fade-in animation-delay-200">
+          {[
+            { n: '15+', l: 'Projets livrés' },
+            { n: '08+', l: "Ans d'expérience" },
+            { n: '05', l: 'Pays d\'intervention' },
+            { n: '99%', l: 'Performance SEO' },
+          ].map((s) => (
+            <div key={s.l}>
+              <p className="text-3xl font-mono font-bold text-black tracking-tighter">{s.n}</p>
+              <p className="text-xs font-medium text-neutral-500 mt-1 uppercase tracking-wider">{s.l}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="max-w-6xl mx-auto px-6 pb-24">
-        <FadeIn>
-          <div className="rounded-3xl p-12 md:p-20 text-center bg-[#D85A30] relative overflow-hidden">
-            {/* Pattern/Texture de fond (Optionnel mais ajoute du premium) */}
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
-            
-            <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-white">
-                Vous avez un projet ?
-              </h2>
-              <p className="text-white/90 text-xl mb-10 max-w-xl mx-auto font-light leading-relaxed">
-                Discutons de comment votre site peut devenir votre meilleur commercial.
-              </p>
-              <Link href="/contact" className="bg-white text-[#D85A30] font-bold px-10 py-5 rounded-full hover:bg-[#FAFAF9] hover:scale-105 transition-all duration-300 inline-block shadow-xl">
-                Demander un devis gratuit
-              </Link>
-            </div>
+      {/* Services Section - Cartes ultra-fines */}
+      <section className="bg-neutral-50 border-y border-[#EAEAEA] py-32">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="mb-16 max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight text-black mb-4">Ingénierie & Design</h2>
+            <p className="text-neutral-500 text-lg leading-relaxed">
+              Une approche systémique où chaque ligne de code et chaque pixel a un objectif commercial précis.
+            </p>
           </div>
-        </FadeIn>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { id: '01', title: 'Systèmes Web', desc: 'Développement WordPress sur-mesure et Next.js.' },
+              { id: '02', title: 'E-commerce', desc: 'WooCommerce, intégrations Mobile Money complexes.' },
+              { id: '03', title: 'UX/UI Design', desc: 'Interfaces pensées pour la conversion utilisateur.' },
+              { id: '04', title: 'SEO Technique', desc: 'Optimisation de la performance et du référencement.' },
+            ].map((service) => (
+              <div key={service.id} className="bg-white p-6 rounded-lg border border-[#EAEAEA] hover:border-brand transition-colors">
+                <span className="text-xs font-mono font-medium text-brand bg-brand/10 px-2 py-1 rounded">{service.id}</span>
+                <h3 className="text-lg font-semibold mt-4 mb-2 tracking-tight text-black">{service.title}</h3>
+                <p className="text-neutral-500 text-sm leading-relaxed">{service.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
+
+      {/* Projets Section */}
+      <section className="max-w-6xl mx-auto px-6">
+        <div className="flex items-end justify-between mb-12">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-black mb-2">Derniers lancements</h2>
+            <p className="text-neutral-500">Sélection de réalisations récentes.</p>
+          </div>
+          <Link href="/projets" className="text-sm font-medium text-brand hover:text-black transition-colors hidden md:block">
+            Voir tout le portfolio →
+          </Link>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-6">
+          {featured.map((p) => (
+            <ProjectCard 
+              key={p.slug}
+              title={p.title}
+              slug={p.slug}
+              tagline={p.tagline}
+              secteur={p.secteur}
+              imageUrl={p.featuredImage?.node?.sourceUrl}
+              imageAlt={p.featuredImage?.node?.altText}
+            />
+          ))}
+        </div>
+        
+        {/* Bouton mobile uniquement */}
+        <div className="mt-8 text-center md:hidden">
+          <Link href="/projets" className="text-sm font-medium text-brand hover:text-black transition-colors">
+            Voir tout le portfolio →
+          </Link>
+        </div>
+      </section>
+      
     </main>
   );
 }

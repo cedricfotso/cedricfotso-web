@@ -8,8 +8,13 @@ export const GET_PROJECTS = `
         lienProjet
         secteur
         marche
-        ordre
         tags
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
       }
     }
   }

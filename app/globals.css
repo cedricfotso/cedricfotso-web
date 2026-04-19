@@ -1,30 +1,51 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&display=swap');
-
+/* app/globals.css */
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
+@theme {
+  /* Nos Design Tokens stricts */
+  --color-brand: #D85A30;
+  --color-brand-hover: #C14E27;
+  
+  /* Typographie système (Geist) */
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #000000;
+    --border: #EAEAEA; /* Gris très clair Vercel-like */
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Sélection de texte personnalisée avec ton orange */
+  ::selection {
+    background-color: var(--color-brand);
+    color: #FFFFFF;
+  }
 }
 
-body {
-  font-family: 'Inter Tight', sans-serif;
-  background: #ffffff;
-  color: #0A0A0A;
-  -webkit-font-smoothing: antialiased;
-}
+/* Animations utilitaires pour les apparitions en douceur */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+  
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
 
-::selection {
-  background: #D85A30;
-  color: white;
-}
-
-.signature {
-  font-family: 'Inter Tight', sans-serif;
-  font-style: italic;
-  font-weight: 500;
-  letter-spacing: -0.04em;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }
