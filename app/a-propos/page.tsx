@@ -18,7 +18,7 @@ const timeline = [
 export default function AboutPage() {
 	return (
 		<>
-			<PageHeader label="À propos" title="Freelance à Douala, à l'intersection du design, du web et de la stratégie." />
+			<PageHeader eyebrow="À propos" title="Freelance à Douala, à l'intersection du design, du web et de la stratégie." />
 			<Section>
 				<div className="grid gap-12 md:grid-cols-12">
 					<div className="md:col-span-4">
