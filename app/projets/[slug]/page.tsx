@@ -1,8 +1,9 @@
-// app/projets/[slug]/page.tsx
 import { fetchGraphQL } from '@/lib/graphql/client';
 import { GET_PROJECT_BY_SLUG } from '@/lib/graphql/queries';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+
+// 1. LA SOLUTION : Empêcher Vercel de pré-calculer cette page à l'aveugle
+export const dynamic = 'force-dynamic';
 
 type ProjectData = {
   projet: {
@@ -12,40 +13,46 @@ type ProjectData = {
     lienProjet?: string;
     secteur: string;
     marche: string;
-    tags?: string;
-    // contexte?: string;
-    // defis?: string;
-    // solutions?: string;
-    // resultats?: string;
   }
 };
 
-export default async function ProjectDetailPage({ params }: { params: { slug: string } }) {
+// 2. CORRECTION NEXT.JS 16 : params doit être traité comme une promesse
+export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  // On décode le slug en l'attendant proprement
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
+
   let project = null;
 
-  // Le bouclier de sécurité anti-crash
   try {
-    const data = await fetchGraphQL<ProjectData>(GET_PROJECT_BY_SLUG, { slug: params.slug });
+    const data = await fetchGraphQL<ProjectData>(GET_PROJECT_BY_SLUG, { slug });
     project = data?.projet;
   } catch (error) {
-    console.error(`Erreur GraphQL pour le projet ${params.slug} :`, error);
+    console.error(`Erreur GraphQL pour le projet ${slug} :`, error);
   }
 
-  // Si le projet n'est pas trouvé ou s'il y a une erreur, on redirige vers la page 404
+  // Si le projet n'existe pas, on affiche un message propre au lieu de crasher
   if (!project) {
-    return notFound();
+    return (
+      <main className="max-w-4xl mx-auto px-6 py-32 text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-black mb-4">Projet indisponible</h1>
+        <p className="text-neutral-500 mb-8">Les détails de ce projet ne peuvent pas être chargés pour le moment.</p>
+        <Link href="/projets" className="bg-black text-white text-sm font-medium px-6 py-3 rounded-md hover:bg-[#D85A30] transition-colors shadow-sm">
+          ← Retour au portfolio
+        </Link>
+      </main>
+    );
   }
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-32 lg:py-48">
-      
       {/* Bouton retour */}
       <Link href="/projets" className="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-black mb-12 transition-colors">
         ← Retour aux projets
       </Link>
 
       <div className="animate-fade-in">
-        {/* Badges */}
+        {/* Badges avec le design Vercel-like */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
           {project.secteur && (
             <span className="text-xs font-mono font-medium uppercase tracking-wider px-3 py-1.5 rounded bg-black text-white">
@@ -73,7 +80,7 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
             href={project.lienProjet} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white text-black text-sm font-medium px-6 py-3 rounded-md border border-[#EAEAEA] hover:border-black hover:bg-neutral-50 transition-all shadow-sm"
+            className="inline-flex items-center gap-2 bg-white text-black text-sm font-medium px-6 py-3 rounded-md border border-[#EAEAEA] hover:border-[#D85A30] hover:text-[#D85A30] transition-all shadow-sm"
           >
             Visiter le site web →
           </a>
@@ -85,7 +92,6 @@ export default async function ProjectDetailPage({ params }: { params: { slug: st
           // Détails de l'étude de cas en cours de rédaction...
         </p>
       </div>
-      
     </main>
   );
 }
