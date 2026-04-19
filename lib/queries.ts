@@ -1,6 +1,8 @@
 import { wpQuery } from "@/lib/graphql/wordpress"
 
-// ---------- Types ----------
+// ==================================================
+// Types
+// ==================================================
 
 export type FeaturedProject = {
   slug: string
@@ -25,7 +27,9 @@ export type Post = LatestPost & {
   featuredImage?: { url: string; alt: string } | null
 }
 
-// ---------- GraphQL queries ----------
+// ==================================================
+// GraphQL queries
+// ==================================================
 
 const GET_FEATURED_PROJECTS = /* GraphQL */ `
   query GetFeaturedProjects($first: Int!) {
@@ -43,6 +47,28 @@ const GET_FEATURED_PROJECTS = /* GraphQL */ `
   }
 `
 
+const GET_PROJECT_SLUGS = /* GraphQL */ `
+  query GetProjectSlugs {
+    projets(first: 200) {
+      nodes { slug }
+    }
+  }
+`
+
+const GET_PROJECT_BY_SLUG = /* GraphQL */ `
+  query GetProjectBySlug($slug: ID!) {
+    projet(id: $slug, idType: SLUG) {
+      title
+      slug
+      tagline
+      lienProjet
+      secteur
+      marche
+      tags
+    }
+  }
+`
+
 const GET_LATEST_POSTS = /* GraphQL */ `
   query GetLatestPosts($first: Int!) {
     posts(
@@ -55,6 +81,14 @@ const GET_LATEST_POSTS = /* GraphQL */ `
         date
         excerpt
       }
+    }
+  }
+`
+
+const GET_POST_SLUGS = /* GraphQL */ `
+  query GetPostSlugs {
+    posts(first: 200, where: { status: PUBLISH }) {
+      nodes { slug }
     }
   }
 `
@@ -77,7 +111,9 @@ const GET_POST_BY_SLUG = /* GraphQL */ `
   }
 `
 
-// ---------- Fetchers ----------
+// ==================================================
+// Projets — fetchers
+// ==================================================
 
 type ProjectsResponse = {
   projets: {
@@ -119,6 +155,75 @@ export async function getAllProjects(limit = 50): Promise<FeaturedProject[]> {
   return getFeaturedProjects(limit)
 }
 
+export async function getProjectsByMetier(
+  slug: string,
+  limit = 20,
+): Promise<FeaturedProject[]> {
+  const all = await getFeaturedProjects(50)
+  const needle = slug.toLowerCase()
+
+  const matched = all.filter((p) => {
+    const haystack = [p.tags, p.secteur, p.marche]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+    return haystack.includes(needle)
+  })
+
+  return matched.slice(0, limit)
+}
+
+export async function getAllProjectSlugs(): Promise<string[]> {
+  try {
+    const data = await wpQuery<{ projets: { nodes: Array<{ slug: string }> } }>(
+      GET_PROJECT_SLUGS,
+    )
+    return (data?.projets?.nodes ?? []).map((n) => n.slug).filter(Boolean)
+  } catch (err) {
+    console.error("[getAllProjectSlugs] failed:", err)
+    return []
+  }
+}
+
+export async function getProjectBySlug(
+  slug: string,
+): Promise<FeaturedProject | null> {
+  try {
+    const data = await wpQuery<{
+      projet: {
+        title: string
+        slug: string
+        tagline?: string | null
+        lienProjet?: string | null
+        secteur?: string | null
+        marche?: string | null
+        tags?: string | null
+      } | null
+    }>(GET_PROJECT_BY_SLUG, { variables: { slug } })
+
+    const p = data?.projet
+    if (!p) return null
+
+    return {
+      slug: p.slug,
+      title: p.title,
+      tagline: p.tagline ?? null,
+      secteur: p.secteur ?? null,
+      marche: p.marche ?? null,
+      tags: p.tags ?? null,
+      lienProjet: p.lienProjet ?? null,
+      featuredImage: null,
+    }
+  } catch (err) {
+    console.error("[getProjectBySlug] failed:", err)
+    return null
+  }
+}
+
+// ==================================================
+// Posts — fetchers
+// ==================================================
+
 type PostsResponse = {
   posts: {
     nodes: Array<{
@@ -150,6 +255,18 @@ export async function getLatestPosts(limit = 3): Promise<LatestPost[]> {
 
 export async function getAllPosts(limit = 50): Promise<LatestPost[]> {
   return getLatestPosts(limit)
+}
+
+export async function getAllPostSlugs(): Promise<string[]> {
+  try {
+    const data = await wpQuery<{ posts: { nodes: Array<{ slug: string }> } }>(
+      GET_POST_SLUGS,
+    )
+    return (data?.posts?.nodes ?? []).map((n) => n.slug).filter(Boolean)
+  } catch (err) {
+    console.error("[getAllPostSlugs] failed:", err)
+    return []
+  }
 }
 
 type PostBySlugResponse = {
@@ -188,120 +305,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     }
   } catch (err) {
     console.error("[getPostBySlug] failed:", err)
-    return null
-  }
-}
-
-/**
- * Retourne les projets associés à un métier/slug.
- * Pour l'instant, filtre côté JS sur le champ Pods "tags" (chaîne).
- * Quand les taxonomies WP seront branchées, remplacer par une query GraphQL avec where.
- */
-export async function getProjectsByMetier(
-  slug: string,
-  limit = 20,
-): Promise<FeaturedProject[]> {
-  const all = await getFeaturedProjects(50)
-  const needle = slug.toLowerCase()
-
-  const matched = all.filter((p) => {
-    const haystack = [p.tags, p.secteur, p.marche]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase()
-    return haystack.includes(needle)
-  })
-
-  return matched.slice(0, limit)
-}
-
-// ---------- Slugs & page détail projet ----------
-
-const GET_PROJECT_SLUGS = /* GraphQL */ `
-  query GetProjectSlugs {
-    projets(first: 200) {
-      nodes { slug }
-    }
-  }
-`
-
-const GET_POST_SLUGS = /* GraphQL */ `
-  query GetPostSlugs {
-    posts(first: 200, where: { status: PUBLISH }) {
-      nodes { slug }
-    }
-  }
-`
-
-const GET_PROJECT_BY_SLUG = /* GraphQL */ `
-  query GetProjectBySlug($slug: ID!) {
-    projet(id: $slug, idType: SLUG) {
-      title
-      slug
-      tagline
-      lienProjet
-      secteur
-      marche
-      tags
-    }
-  }
-`
-
-export async function getAllProjectSlugs(): Promise<string[]> {
-  try {
-    const data = await wpQuery<{ projets: { nodes: Array<{ slug: string }> } }>(
-      GET_PROJECT_SLUGS,
-    )
-    return (data?.projets?.nodes ?? []).map((n) => n.slug).filter(Boolean)
-  } catch (err) {
-    console.error("[getAllProjectSlugs] failed:", err)
-    return []
-  }
-}
-
-export async function getAllPostSlugs(): Promise<string[]> {
-  try {
-    const data = await wpQuery<{ posts: { nodes: Array<{ slug: string }> } }>(
-      GET_POST_SLUGS,
-    )
-    return (data?.posts?.nodes ?? []).map((n) => n.slug).filter(Boolean)
-  } catch (err) {
-    console.error("[getAllPostSlugs] failed:", err)
-    return []
-  }
-}
-
-export async function getProjectBySlug(
-  slug: string,
-): Promise<FeaturedProject | null> {
-  try {
-    const data = await wpQuery<{
-      projet: {
-        title: string
-        slug: string
-        tagline?: string | null
-        lienProjet?: string | null
-        secteur?: string | null
-        marche?: string | null
-        tags?: string | null
-      } | null
-    }>(GET_PROJECT_BY_SLUG, { variables: { slug } })
-
-    const p = data?.projet
-    if (!p) return null
-
-    return {
-      slug: p.slug,
-      title: p.title,
-      tagline: p.tagline ?? null,
-      secteur: p.secteur ?? null,
-      marche: p.marche ?? null,
-      tags: p.tags ?? null,
-      lienProjet: p.lienProjet ?? null,
-      featuredImage: null,
-    }
-  } catch (err) {
-    console.error("[getProjectBySlug] failed:", err)
     return null
   }
 }
