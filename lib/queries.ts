@@ -151,8 +151,35 @@ export async function getFeaturedProjects(limit = 4): Promise<FeaturedProject[]>
   }
 }
 
-export async function getAllProjects(limit = 50): Promise<FeaturedProject[]> {
-  return getFeaturedProjects(limit)
+export type GetAllProjectsOptions = {
+  limit?: number
+  /** Filtre côté JS sur tags / secteur / marché (insensible à la casse). */
+  format?: string
+}
+
+export async function getAllProjects(
+  arg?: number | GetAllProjectsOptions,
+): Promise<FeaturedProject[]> {
+  // Signature numérique historique : getAllProjects(20)
+  if (typeof arg === "number") {
+    return getFeaturedProjects(arg)
+  }
+
+  const { limit = 50, format } = arg ?? {}
+  const all = await getFeaturedProjects(50)
+
+  if (!format) return all.slice(0, limit)
+
+  const needle = format.toLowerCase()
+  const matched = all.filter((p) => {
+    const haystack = [p.tags, p.secteur, p.marche]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+    return haystack.includes(needle)
+  })
+
+  return matched.slice(0, limit)
 }
 
 export async function getProjectsByMetier(
