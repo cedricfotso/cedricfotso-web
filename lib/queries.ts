@@ -47,6 +47,9 @@ const GET_FEATURED_PROJECTS = /* GraphQL */ `
   }
 `
 
+/** Alias historique de FeaturedProject. */
+export type ProjetNode = FeaturedProject
+
 const GET_PROJECT_SLUGS = /* GraphQL */ `
   query GetProjectSlugs {
     projets(first: 200) {
