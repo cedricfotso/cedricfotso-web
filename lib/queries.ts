@@ -158,6 +158,8 @@ export type GetAllProjectsOptions = {
   limit?: number
   /** Filtre côté JS sur tags / secteur / marché (insensible à la casse). */
   format?: string
+  /** Alias de `format`, accepté pour compatibilité (pages métiers). */
+  typeSlug?: string
 }
 
 export async function getAllProjects(
@@ -168,12 +170,13 @@ export async function getAllProjects(
     return getFeaturedProjects(arg)
   }
 
-  const { limit = 50, format } = arg ?? {}
+  const { limit = 50, format, typeSlug } = arg ?? {}
+  const needleSource = format ?? typeSlug
+
   const all = await getFeaturedProjects(50)
+  if (!needleSource) return all.slice(0, limit)
 
-  if (!format) return all.slice(0, limit)
-
-  const needle = format.toLowerCase()
+  const needle = needleSource.toLowerCase()
   const matched = all.filter((p) => {
     const haystack = [p.tags, p.secteur, p.marche]
       .filter(Boolean)
