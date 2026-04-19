@@ -1,97 +1,111 @@
-import { fetchGraphQL } from '@/lib/graphql/client';
-import { GET_PROJECT_BY_SLUG } from '@/lib/graphql/queries';
-import Link from 'next/link';
+import type { Metadata } from "next"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { Section } from "@/components/ui/Section"
+import {
+  getAllProjectSlugs,
+  getProjectBySlug,
+} from "@/lib/queries"
 
-// 1. LA SOLUTION : Empêcher Vercel de pré-calculer cette page à l'aveugle
-export const dynamic = 'force-dynamic';
+export const revalidate = 300
+export const dynamicParams = true
 
-type ProjectData = {
-  projet: {
-    title: string;
-    slug: string;
-    tagline: string;
-    lienProjet?: string;
-    secteur: string;
-    marche: string;
+type Props = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateStaticParams() {
+  const slugs = await getAllProjectSlugs()
+  return slugs.map((slug) => ({ slug }))
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const projet = await getProjectBySlug(slug)
+  if (!projet) return { title: "Projet introuvable" }
+
+  return {
+    title: projet.title,
+    description: projet.tagline ?? undefined,
+    openGraph: {
+      title: projet.title,
+      description: projet.tagline ?? undefined,
+      type: "article",
+    },
   }
-};
+}
 
-// 2. CORRECTION NEXT.JS 16 : params doit être traité comme une promesse
-export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  // On décode le slug en l'attendant proprement
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-
-  let project = null;
-
-  try {
-    const data = await fetchGraphQL<ProjectData>(GET_PROJECT_BY_SLUG, { slug });
-    project = data?.projet;
-  } catch (error) {
-    console.error(`Erreur GraphQL pour le projet ${slug} :`, error);
-  }
-
-  // Si le projet n'existe pas, on affiche un message propre au lieu de crasher
-  if (!project) {
-    return (
-      <main className="max-w-4xl mx-auto px-6 py-32 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-black mb-4">Projet indisponible</h1>
-        <p className="text-neutral-500 mb-8">Les détails de ce projet ne peuvent pas être chargés pour le moment.</p>
-        <Link href="/projets" className="bg-black text-white text-sm font-medium px-6 py-3 rounded-md hover:bg-[#D85A30] transition-colors shadow-sm">
-          ← Retour au portfolio
-        </Link>
-      </main>
-    );
-  }
+export default async function ProjetPage({ params }: Props) {
+  const { slug } = await params
+  const projet = await getProjectBySlug(slug)
+  if (!projet) notFound()
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-32 lg:py-48">
-      {/* Bouton retour */}
-      <Link href="/projets" className="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-black mb-12 transition-colors">
-        ← Retour aux projets
-      </Link>
-
-      <div className="animate-fade-in">
-        {/* Badges avec le design Vercel-like */}
-        <div className="flex flex-wrap items-center gap-3 mb-8">
-          {project.secteur && (
-            <span className="text-xs font-mono font-medium uppercase tracking-wider px-3 py-1.5 rounded bg-black text-white">
-              {project.secteur}
-            </span>
-          )}
-          {project.marche && (
-            <span className="text-xs font-mono font-medium uppercase tracking-wider px-3 py-1.5 rounded border border-[#EAEAEA] text-neutral-600">
-              {project.marche}
-            </span>
-          )}
-        </div>
-
-        {/* Titre et Tagline */}
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-black mb-6">
-          {project.title}
-        </h1>
-        <p className="text-xl text-neutral-500 leading-relaxed font-light mb-12">
-          {project.tagline}
-        </p>
-
-        {/* Lien externe du projet */}
-        {project.lienProjet && (
-          <a 
-            href={project.lienProjet} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white text-black text-sm font-medium px-6 py-3 rounded-md border border-[#EAEAEA] hover:border-[#D85A30] hover:text-[#D85A30] transition-all shadow-sm"
+    <main>
+      <header className="pt-32 pb-16 md:pt-40 md:pb-24">
+        <div className="mx-auto max-w-4xl px-6">
+          <Link
+            href="/projets"
+            className="mb-8 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline"
           >
-            Visiter le site web →
-          </a>
-        )}
-      </div>
+            ← Tous les projets
+          </Link>
 
-      <div className="mt-24 pt-12 border-t border-[#EAEAEA] animate-fade-in animation-delay-200">
-        <p className="text-neutral-500 font-mono text-sm">
-          // Détails de l'étude de cas en cours de rédaction...
-        </p>
-      </div>
+          {projet.secteur ? (
+            <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
+              {projet.secteur}
+              {projet.marche ? ` · ${projet.marche}` : ""}
+            </p>
+          ) : null}
+
+          <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+            {projet.title}
+          </h1>
+
+          {projet.tagline ? (
+            <p className="mt-6 text-lg text-neutral-300 md:text-xl">
+              {projet.tagline}
+            </p>
+          ) : null}
+        </div>
+      </header>
+
+      <Section bordered>
+        <div className="mx-auto max-w-3xl space-y-8 text-lg text-neutral-300">
+          <p>
+            Étude de cas en cours de rédaction. Les champs détaillés
+            (contexte, défis, solutions, résultats) seront branchés dès que
+            les champs Pods correspondants seront exposés via WPGraphQL.
+          </p>
+
+          {projet.lienProjet ? (
+            <p>
+              <a
+                href={projet.lienProjet}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 hover:text-white"
+              >
+                Voir le site en ligne ↗
+              </a>
+            </p>
+          ) : null}
+        </div>
+      </Section>
+
+      <Section bordered>
+        <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+          <p className="text-2xl font-semibold tracking-tight md:text-3xl">
+            Un projet similaire en tête ?
+          </p>
+          <Link
+            href="/contact"
+            className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+          >
+            Discutons-en
+          </Link>
+        </div>
+      </Section>
     </main>
-  );
+  )
 }

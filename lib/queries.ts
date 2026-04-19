@@ -214,3 +214,94 @@ export async function getProjectsByMetier(
 
   return matched.slice(0, limit)
 }
+
+// ---------- Slugs & page détail projet ----------
+
+const GET_PROJECT_SLUGS = /* GraphQL */ `
+  query GetProjectSlugs {
+    projets(first: 200) {
+      nodes { slug }
+    }
+  }
+`
+
+const GET_POST_SLUGS = /* GraphQL */ `
+  query GetPostSlugs {
+    posts(first: 200, where: { status: PUBLISH }) {
+      nodes { slug }
+    }
+  }
+`
+
+const GET_PROJECT_BY_SLUG = /* GraphQL */ `
+  query GetProjectBySlug($slug: ID!) {
+    projet(id: $slug, idType: SLUG) {
+      title
+      slug
+      tagline
+      lienProjet
+      secteur
+      marche
+      tags
+    }
+  }
+`
+
+export async function getAllProjectSlugs(): Promise<string[]> {
+  try {
+    const data = await wpQuery<{ projets: { nodes: Array<{ slug: string }> } }>(
+      GET_PROJECT_SLUGS,
+    )
+    return (data?.projets?.nodes ?? []).map((n) => n.slug).filter(Boolean)
+  } catch (err) {
+    console.error("[getAllProjectSlugs] failed:", err)
+    return []
+  }
+}
+
+export async function getAllPostSlugs(): Promise<string[]> {
+  try {
+    const data = await wpQuery<{ posts: { nodes: Array<{ slug: string }> } }>(
+      GET_POST_SLUGS,
+    )
+    return (data?.posts?.nodes ?? []).map((n) => n.slug).filter(Boolean)
+  } catch (err) {
+    console.error("[getAllPostSlugs] failed:", err)
+    return []
+  }
+}
+
+export async function getProjectBySlug(
+  slug: string,
+): Promise<FeaturedProject | null> {
+  try {
+    const data = await wpQuery<{
+      projet: {
+        title: string
+        slug: string
+        tagline?: string | null
+        lienProjet?: string | null
+        secteur?: string | null
+        marche?: string | null
+        tags?: string | null
+      } | null
+    }>(GET_PROJECT_BY_SLUG, { variables: { slug } })
+
+    const p = data?.projet
+    if (!p) return null
+
+    return {
+      slug: p.slug,
+      title: p.title,
+      tagline: p.tagline ?? null,
+      secteur: p.secteur ?? null,
+      marche: p.marche ?? null,
+      tags: p.tags ?? null,
+      lienProjet: p.lienProjet ?? null,
+      featuredImage: null,
+    }
+  } catch (err) {
+    console.error("[getProjectBySlug] failed:", err)
+    return null
+  }
+}

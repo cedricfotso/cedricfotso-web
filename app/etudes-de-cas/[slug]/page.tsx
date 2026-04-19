@@ -1,72 +1,128 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Section } from "@/components/ui/Section"
-import { Label } from "@/components/ui/Label"
-import { Button } from "@/components/ui/Button"
-import { Container } from "@/components/layout/Container"
-import { getProjectBySlug, getAllProjectSlugs } from "@/lib/queries"
-import { stripHtml } from "@/lib/utils"
-
-type Props = { params: Promise<{ slug: string }> }
+import {
+  getAllProjectSlugs,
+  getProjectBySlug,
+} from "@/lib/queries"
 
 export const revalidate = 300
+export const dynamicParams = true
+
+type Props = {
+  params: Promise<{ slug: string }>
+}
 
 export async function generateStaticParams() {
-	const slugs = await getAllProjectSlugs()
-	return slugs.map((slug) => ({ slug }))
+  const slugs = await getAllProjectSlugs()
+  return slugs.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-	const { slug } = await params
-	const p = await getProjectBySlug(slug)
-	if (!p) return { title: "Étude introuvable" }
-	return { title: p.title, description: stripHtml(p.excerpt).slice(0, 160) }
+  const { slug } = await params
+  const projet = await getProjectBySlug(slug)
+  if (!projet) return { title: "Étude de cas introuvable" }
+
+  return {
+    title: projet.title,
+    description: projet.tagline ?? undefined,
+    openGraph: {
+      title: projet.title,
+      description: projet.tagline ?? undefined,
+      type: "article",
+      images: projet.featuredImage?.url ? [projet.featuredImage.url] : undefined,
+    },
+  }
 }
 
-export default async function ProjectPage({ params }: Props) {
-	const { slug } = await params
-	const p = await getProjectBySlug(slug)
-	if (!p) notFound()
+export default async function EtudeDeCasPage({ params }: Props) {
+  const { slug } = await params
+  const projet = await getProjectBySlug(slug)
+  if (!projet) notFound()
 
-	const type = p.typesDeProjet?.nodes?.[0]?.name ?? "Projet"
-	const fields = p.projetFields
-	const img = p.featuredImage?.node
+  return (
+    <main>
+      <header className="pt-32 pb-16 md:pt-40 md:pb-24">
+        <div className="mx-auto max-w-4xl px-6">
+          <Link
+            href="/etudes-de-cas"
+            className="mb-8 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline"
+          >
+            ← Toutes les études
+          </Link>
 
-	return (
-		<>
-			<Section className="pt-10 pb-6 md:pt-16 md:pb-10">
-				<Label>{type}</Label>
-				<h1 className="mt-5 max-w-4xl text-[32px] md:text-[44px]">{p.title}</h1>
-				<div className="mt-8 grid gap-4 border-t border-border pt-6 text-sm md:grid-cols-4">
-					{fields?.client && <Meta label="Client" value={fields.client} />}
-					{fields?.annee && <Meta label="Année" value={fields.annee} />}
-					{fields?.duree && <Meta label="Durée" value={fields.duree} />}
-					{fields?.role && <Meta label="Rôle" value={fields.role} />}
-				</div>
-			</Section>
+          {projet.secteur ? (
+            <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
+              {projet.secteur}
+              {projet.marche ? ` · ${projet.marche}` : ""}
+            </p>
+          ) : null}
 
-			{img?.sourceUrl && (
-				<Container className="mb-10">
-					<div className="relative aspect-[16/9] overflow-hidden rounded-[8px] bg-background-2">
-						<Image src={img.sourceUrl} alt={img.altText ?? p.title} fill className="object-cover" priority sizes="(min-width: 1160px) 1160px, 100vw" />
-					</div>
-				</Container>
-			)}
+          <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+            {projet.title}
+          </h1>
 
-			<Section>
-				<article className="prose-cf mx-auto max-w-3xl" dangerouslySetInnerHTML= __html: p.content ?? ""  />
-			</Section>
+          {projet.tagline ? (
+            <p className="mt-6 text-lg text-neutral-300 md:text-xl">
+              {projet.tagline}
+            </p>
+          ) : null}
+        </div>
+      </header>
 
-			<Section tone="muted" className="text-center">
-				<h2 className="text-[26px] md:text-[32px]">Un projet similaire&nbsp;?</h2>
-				<p className="mx-auto mt-4 max-w-xl text-muted">Écrivez-moi, je réponds sous 48h ouvrées.</p>
-				<div className="mt-8"><Button href="/contact" variant="primary">Me contacter</Button></div>
-			</Section>
-		</>
-	)
-}
+      {projet.featuredImage?.url ? (
+        <div className="mx-auto mb-16 max-w-5xl px-6">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-neutral-900">
+            <Image
+              src={projet.featuredImage.url}
+              alt={projet.featuredImage.alt}
+              fill
+              sizes="(min-width: 1024px) 1024px, 100vw"
+              className="object-cover"
+              priority
+            />
+          </div>
+        </div>
+      ) : null}
 
-function Meta({ label, value }: { label: string; value: string }) {
-	return (<div><Label>{label}</Label><p className="mt-1">{value}</p></div>)
+      <Section>
+        <div className="mx-auto max-w-3xl space-y-8 text-lg text-neutral-300">
+          <p>
+            Étude de cas détaillée en cours de rédaction. Les sections
+            contexte, défis, solutions et résultats seront publiées dès que
+            les champs Pods correspondants seront exposés via WPGraphQL.
+          </p>
+
+          {projet.lienProjet ? (
+            <p>
+              <a
+                href={projet.lienProjet}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 hover:text-white"
+              >
+                Voir le site en ligne ↗
+              </a>
+            </p>
+          ) : null}
+        </div>
+      </Section>
+
+      <Section bordered>
+        <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+          <p className="text-2xl font-semibold tracking-tight md:text-3xl">
+            Un projet similaire en tête ?
+          </p>
+          <Link
+            href="/contact"
+            className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+          >
+            Discutons-en
+          </Link>
+        </div>
+      </Section>
+    </main>
+  )
 }
