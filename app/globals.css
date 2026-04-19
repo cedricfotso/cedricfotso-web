@@ -12,11 +12,11 @@
 }
 
 @layer base {
-  :root {
-    --background: #FFFFFF;
-    --foreground: #000000;
-    --border: #EAEAEA; /* Gris très clair Vercel-like */
-  }
+:root {
+  --background: #FAFAFA;   /* blanc cassé Vercel, pas blanc pur */
+  --foreground: #000000;
+  --border: #EAEAEA;
+}
 
   body {
     background-color: var(--background);
