@@ -5,12 +5,12 @@ export function HeroAccueil() {
     <section className="relative pt-32 pb-24 md:pt-40 md:pb-32">
       <div className="mx-auto max-w-5xl px-6">
         <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
-          Designer digital · Développeur WordPress · Douala
+          Créateur de sites web & Designer · Douala
         </p>
         <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
           Des sites web sur mesure,
           <br />
-          pensés <span className="text-neutral-400">avant</span> d&apos;être codés.
+          pensés <span className="text-neutral-400">avant  </span>d&apos;être codés.
         </h1>
         <p className="mt-8 max-w-2xl text-lg text-neutral-300 md:text-xl">
           J&apos;accompagne les marques qui refusent les templates et les contenus générés

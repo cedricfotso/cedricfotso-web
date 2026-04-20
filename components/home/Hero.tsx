@@ -5,7 +5,7 @@ export function Hero() {
     <section className="relative pt-32 pb-24 md:pt-40 md:pb-32">
       <div className="mx-auto max-w-5xl px-6">
         <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
-          Designer digital · Développeur WordPress · Douala
+          Créateur de sites web & Designer · Douala
         </p>
         <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-7xl">
           Des sites web sur mesure,
