@@ -25,22 +25,20 @@ export function PageHeader({
   const paragraph = lead ?? intro
 
   return (
-    <header className={cn("pt-32 pb-16 md:pt-40 md:pb-24", className)}>
-      <div className="mx-auto max-w-4xl px-6">
+    <div className={cn("site-container py-16 md:py-24", className)}>
+      <div className="max-w-2xl">
         {topline ? (
-          <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
-            {topline}
-          </p>
+          <p className="label-caps mb-4">{topline}</p>
         ) : null}
-        <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+        <h1 className="text-4xl md:text-5xl font-medium tracking-tight text-foreground">
           {title}
         </h1>
         {paragraph ? (
-          <p className="mt-6 max-w-2xl text-lg text-neutral-300 md:text-xl">
+          <p className="mt-4 text-[17px] leading-relaxed text-foreground/70">
             {paragraph}
           </p>
         ) : null}
       </div>
-    </header>
+    </div>
   )
 }

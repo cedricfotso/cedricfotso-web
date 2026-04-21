@@ -42,15 +42,15 @@ export function ContactForm() {
     } catch (err) {
       console.error("[ContactForm] submit failed:", err)
       setStatus("error")
-      setError("L'envoi a échoué. Réessaie ou écris-moi directement à in@tambour.cm.")
+      setError("L'envoi a échoué. Réessaie ou écris-moi directement à mr@cedricfotso.com.")
     }
   }
 
   if (status === "success") {
     return (
-      <div className="rounded-2xl border border-border bg-white/5 p-8 text-center">
-        <p className="text-xl font-semibold">Message envoyé.</p>
-        <p className="mt-3 text-neutral-400">
+      <div className="py-8">
+        <p className="text-foreground font-medium">Message envoyé.</p>
+        <p className="text-muted text-sm mt-2">
           Je reviens vers toi sous 24h ouvrées.
         </p>
       </div>
@@ -58,44 +58,20 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      <Field
-        name="nom"
-        label="Nom"
-        required
-        autoComplete="name"
-      />
-      <Field
-        name="email"
-        label="Email"
-        type="email"
-        required
-        autoComplete="email"
-      />
-      <Field
-        name="sujet"
-        label="Sujet"
-      />
-      <Field
-        name="message"
-        label="Message"
-        required
-        multiline
-      />
+    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+      <Field name="nom" label="Nom" required autoComplete="name" />
+      <Field name="email" label="Email" type="email" required autoComplete="email" />
+      <Field name="sujet" label="Sujet" autoComplete="off" />
+      <Field name="message" label="Message" required multiline />
 
       {error ? (
-        <p className="text-sm text-red-400">{error}</p>
+        <p className="text-red-600 text-sm">{error}</p>
       ) : null}
 
       <button
         type="submit"
         disabled={status === "submitting"}
-        className={cn(
-          "rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition",
-          status === "submitting"
-            ? "cursor-wait opacity-60"
-            : "hover:bg-neutral-200",
-        )}
+        className="inline-flex items-center justify-center gap-2 rounded-[8px] px-[18px] py-[10px] text-sm font-medium transition-colors duration-150 bg-brand text-white hover:bg-brand-hover disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2"
       >
         {status === "submitting" ? "Envoi…" : "Envoyer le message"}
       </button>
@@ -114,23 +90,26 @@ type FieldProps = {
 
 function Field({ name, label, type = "text", required, autoComplete, multiline }: FieldProps) {
   const common =
-    "w-full rounded-xl border border-border bg-transparent px-4 py-3 text-white placeholder:text-neutral-600 focus:border-white focus:outline-none"
+    "w-full rounded-md border border-border bg-transparent px-4 py-3 text-foreground placeholder:text-muted focus:border-foreground focus:outline-none transition-colors"
 
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm text-neutral-400">
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor={name} className="text-sm font-medium text-foreground">
         {label}
-        {required ? <span className="text-red-400"> *</span> : null}
-      </span>
+        {required ? <span className="text-brand ml-0.5">*</span> : null}
+      </label>
       {multiline ? (
         <textarea
+          id={name}
           name={name}
           required={required}
-          rows={6}
-          className={common}
+          autoComplete={autoComplete}
+          rows={5}
+          className={cn(common, "resize-y")}
         />
       ) : (
         <input
+          id={name}
           name={name}
           type={type}
           required={required}
@@ -138,6 +117,6 @@ function Field({ name, label, type = "text", required, autoComplete, multiline }
           className={common}
         />
       )}
-    </label>
+    </div>
   )
 }

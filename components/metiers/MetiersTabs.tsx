@@ -3,13 +3,15 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { METIERS, type MetierSlug } from "@/lib/metiers"
 
-const metiers = [
-  { slug: "design", label: "Design" },
-  { slug: "wordpress", label: "WordPress" },
-  { slug: "headless", label: "Headless / Next.js" },
-  { slug: "ecommerce", label: "E-commerce" },
-  { slug: "strategie", label: "Stratégie" },
+const SLUGS: MetierSlug[] = [
+  "sites-web",
+  "design",
+  "wordpress",
+  "headless",
+  "ecommerce",
+  "strategie",
 ]
 
 export function MetiersTabs() {
@@ -18,30 +20,34 @@ export function MetiersTabs() {
   return (
     <nav
       aria-label="Métiers"
-      className="border-b border-border"
+      className="border-b border-border sticky top-[var(--header-height,64px)] z-10 bg-background"
     >
-      <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-6">
-        {metiers.map((m) => {
-          const href = `/metiers/${m.slug}`
-          const active = pathname?.startsWith(href)
+      <div className="site-container">
+        <ul className="flex gap-1 overflow-x-auto py-1">
+          {SLUGS.map((slug) => {
+            const metier = METIERS[slug]
+            const href = `/metiers/${slug}`
+            const isActive = pathname === href
 
-          return (
-            <li key={m.slug} className="shrink-0">
-              <Link
-                href={href}
-                className={cn(
-                  "inline-block border-b-2 px-4 py-4 text-sm transition",
-                  active
-                    ? "border-white text-white"
-                    : "border-transparent text-neutral-400 hover:text-white",
-                )}
-              >
-                {m.label}
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
+            return (
+              <li key={slug} className="shrink-0">
+                <Link
+                  href={href}
+                  className={cn(
+                    "inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
+                    isActive
+                      ? "bg-foreground text-background"
+                      : "text-muted hover:text-foreground hover:bg-foreground/5",
+                  )}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {metier.label}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </nav>
   )
 }

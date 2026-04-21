@@ -1,16 +1,8 @@
-import Link from "next/link"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { Section } from "@/components/ui/Section"
-
-export type MetierContent = {
-  eyebrow: string
-  title: string
-  lead: string
-  pourQui: string[]
-  livrables: string[]
-  methode: Array<{ titre: string; desc: string }>
-  ctaLabel?: string
-}
+import { Label } from "@/components/ui/Label"
+import { Button } from "@/components/ui/Button"
+import type { MetierContent } from "@/lib/metiers"
 
 type Props = {
   content?: MetierContent
@@ -20,97 +12,110 @@ export function MetierTemplate({ content }: Props) {
   if (!content) {
     return (
       <Section>
-        <p className="text-neutral-500">
-          Contenu du métier non configuré.
-        </p>
+        <div className="site-container py-16">
+          <p className="text-muted">Contenu du métier non configuré.</p>
+        </div>
       </Section>
     )
   }
 
   const {
-    eyebrow,
+    label,
     title,
-    lead,
+    intro,
     pourQui = [],
     livrables = [],
     methode = [],
-    ctaLabel = "Parlons de ton projet",
+    faq = [],
   } = content
+
+  const ctaLabel = "Parlons de ton projet"
 
   return (
     <>
-      <PageHeader eyebrow={eyebrow} title={title} lead={lead} />
+      <PageHeader label={label} title={title} lead={intro} />
 
       {(pourQui.length > 0 || livrables.length > 0) && (
-        <Section bordered>
-          <div className="grid gap-16 md:grid-cols-2">
-            {pourQui.length > 0 && (
-              <div>
-                <h2 className="text-sm uppercase tracking-widest text-neutral-400">
-                  Pour qui
-                </h2>
-                <ul className="mt-6 space-y-3 text-lg text-neutral-200">
-                  {pourQui.map((item) => (
-                    <li key={item} className="flex gap-3">
-                      <span className="text-neutral-500">—</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {livrables.length > 0 && (
-              <div>
-                <h2 className="text-sm uppercase tracking-widest text-neutral-400">
-                  Livrables
-                </h2>
-                <ul className="mt-6 space-y-3 text-lg text-neutral-200">
-                  {livrables.map((item) => (
-                    <li key={item} className="flex gap-3">
-                      <span className="text-neutral-500">—</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+        <Section>
+          <div className="site-container">
+            <div className="grid gap-12 md:grid-cols-2">
+              {pourQui.length > 0 && (
+                <div>
+                  <Label>Pour qui</Label>
+                  <ul className="mt-6 space-y-3">
+                    {pourQui.map((item) => (
+                      <li key={item} className="flex gap-3 text-foreground">
+                        <span className="text-brand mt-1 shrink-0">—</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {livrables.length > 0 && (
+                <div>
+                  <Label>Livrables</Label>
+                  <ul className="mt-6 space-y-4">
+                    {livrables.map((item) => (
+                      <li key={item.titre} className="flex gap-3">
+                        <span className="text-brand mt-1 shrink-0">—</span>
+                        <div>
+                          <p className="font-medium text-foreground">{item.titre}</p>
+                          <p className="text-muted text-sm mt-0.5">{item.description}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </Section>
       )}
 
       {methode.length > 0 && (
-        <Section bordered>
-          <h2 className="mb-12 text-sm uppercase tracking-widest text-neutral-400">
-            Méthode
-          </h2>
-          <ol className="grid gap-8 md:grid-cols-3">
-            {methode.map((etape, i) => (
-              <li key={etape.titre} className="border-t border-border pt-6">
-                <span className="mb-3 block text-sm text-neutral-500">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="text-xl font-semibold tracking-tight">
-                  {etape.titre}
-                </h3>
-                <p className="mt-3 text-neutral-400">{etape.desc}</p>
-              </li>
-            ))}
-          </ol>
+        <Section tone="muted">
+          <div className="site-container">
+            <Label>Méthode</Label>
+            <ol className="mt-8 space-y-6">
+              {methode.map((etape, i) => (
+                <li key={etape.etape} className="flex gap-6 items-start">
+                  <span className="text-[13px] font-medium text-muted tabular-nums w-6 shrink-0 pt-0.5">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <p className="font-medium text-foreground">{etape.etape}</p>
+                    <p className="text-muted text-sm mt-1">{etape.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
         </Section>
       )}
 
-      <Section bordered>
-        <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-          <p className="text-2xl font-semibold tracking-tight md:text-3xl">
+      {faq.length > 0 && (
+        <Section>
+          <div className="site-container">
+            <Label>Questions fréquentes</Label>
+            <dl className="mt-8 space-y-6 max-w-2xl">
+              {faq.map((item) => (
+                <div key={item.q}>
+                  <dt className="font-medium text-foreground">{item.q}</dt>
+                  <dd className="mt-1 text-muted leading-relaxed">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </Section>
+      )}
+
+      <Section tone="muted">
+        <div className="site-container text-center py-8">
+          <p className="text-lg font-medium text-foreground mb-6">
             Envie d&apos;avancer ?
           </p>
-          <Link
-            href="/contact"
-            className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
-          >
-            {ctaLabel}
-          </Link>
+          <Button href="/contact">{ctaLabel}</Button>
         </div>
       </Section>
     </>
