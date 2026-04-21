@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+	
 	--color-background-1: #ffffff;
 	--color-background-2: #fafaf8;
 	--color-foreground: #1c1c1c;
@@ -11,9 +12,15 @@
 	--color-brand-hover: #c04a22;
 	--color-brand-soft: #fbeee7;
 
+	/* CORRECTION ICI : On écrase les gris Tailwind pour qu'ils soient lisibles sur fond noir */
+	--color-neutral-300: #d4d4d4; /* Gris beaucoup plus clair (avant: #d4d4d4, tu peux essayer #e5e5e5) */
+	--color-neutral-400: #a3a3a3; /* Gris moyen lisible */
+	--color-neutral-500: #737373;
+
 	--font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
 
 	--container-site: 1160px;
+	
 }
 
 @layer base {
