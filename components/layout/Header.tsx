@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { Container } from "./Container"
@@ -12,12 +13,12 @@ const links = [
     href: "/metiers",
     label: "Métiers",
     subLinks: [
-      { href: "/metiers/sites-web",  label: "Sites Web",        desc: "Vitrines, CMS, plateformes." },
-      { href: "/metiers/design",     label: "Design",           desc: "Interfaces UI/UX & identité visuelle." },
-      { href: "/metiers/wordpress",  label: "WordPress",        desc: "Sur mesure, sans page builder." },
+      { href: "/metiers/sites-web",  label: "Sites Web",          desc: "Vitrines, CMS, plateformes." },
+      { href: "/metiers/design",     label: "Design",             desc: "Interfaces UI/UX & identité visuelle." },
+      { href: "/metiers/wordpress",  label: "WordPress",          desc: "Sur mesure, sans page builder." },
       { href: "/metiers/headless",   label: "Headless / Next.js", desc: "Front moderne, back familier." },
-      { href: "/metiers/ecommerce",  label: "E-commerce",       desc: "WooCommerce ou Next.js+Stripe." },
-      { href: "/metiers/strategie",  label: "Stratégie",        desc: "Architecture & conseil digital." },
+      { href: "/metiers/ecommerce",  label: "E-commerce",         desc: "WooCommerce ou Next.js+Stripe." },
+      { href: "/metiers/strategie",  label: "Stratégie",          desc: "Architecture & conseil digital." },
     ],
   },
   { href: "/etudes-de-cas", label: "Études de cas" },
@@ -36,12 +37,12 @@ export function Header() {
 
           {/* Logo */}
           <Link href="/" onClick={() => setOpen(false)} className="shrink-0">
-                <image
-                src="/images/cedricfotso.svg"
-                alt="Cédric Fotso"
-                width={130}
-                height={130}
-                />
+            <Image
+              src="/images/cedricfotso.svg"
+              alt="Cédric Fotso"
+              width={130}
+              height={130}
+            />
           </Link>
 
           {/* Nav desktop */}
@@ -60,6 +61,7 @@ export function Header() {
                     >
                       {l.label}
                     </button>
+
                     {/* Dropdown */}
                     <div className="absolute left-0 top-full pt-2 hidden group-hover:block z-50">
                       <div className="bg-background border border-border rounded-xl shadow-lg p-2 w-56">
