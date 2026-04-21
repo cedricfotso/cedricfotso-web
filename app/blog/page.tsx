@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getAllPosts } from "@/lib/graphql/posts";
+// CORRECTION ICI : on pointe vers queries au lieu de posts
+import { getAllPosts } from "@/lib/graphql/queries";
 
 export const revalidate = 3600;
 

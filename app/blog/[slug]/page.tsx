@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPostBySlug, getAllPostSlugs } from "@/lib/graphql/posts";
+// CORRECTION ICI : on pointe vers queries
+import { getPostBySlug, getAllPostSlugs } from "@/lib/graphql/queries";
 
 export const revalidate = 3600;
 

@@ -1,5 +1,10 @@
-const WP_GRAPHQL_URL =
-  process.env.WP_GRAPHQL_URL ?? "https://cms.cedricfotso.com/graphql"
+const WP_GRAPHQL_URL = process.env.WP_GRAPHQL_URL!;
+
+if (!WP_GRAPHQL_URL) {
+  throw new Error(
+    "Erreur critique : WP_GRAPHQL_URL n'est pas défini dans les variables d'environnement."
+  );
+}
 
 type WpQueryOptions = {
   variables?: Record<string, unknown>

@@ -20,9 +20,9 @@ const groups = [
 		{ href: "/ecrits", label: "Écrits" },
 	]},
 	{ title: "Contact", items: [
-		{ href: "mailto:in@tambour.cm", label: "in@tambour.cm" },
+		{ href: "mailto:mr@cedricfotso.com", label: "mr@cedricfotso.com" },
 		{ href: "https://github.com/cedricfotso", label: "GitHub" },
-		{ href: "https://www.linkedin.com/in/cedricfotso", label: "LinkedIn" },
+		{ href: "https://www.linkedin.com/in/cedricaimefotso", label: "LinkedIn" },
 	]},
 ]
 

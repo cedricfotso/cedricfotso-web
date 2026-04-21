@@ -13,7 +13,7 @@ export default function ContactPage() {
 			<Section>
 				<div className="grid gap-12 md:grid-cols-12">
 					<aside className="md:col-span-4 space-y-8">
-						<div><Label>Email</Label><p className="mt-2 text-[16px]"><a href="mailto:in@tambour.cm" className="text-brand underline underline-offset-4">in@tambour.cm</a></p></div>
+						<div><Label>Email</Label><p className="mt-2 text-[16px]"><a href="mailto:mr@cedricfotso.com" className="text-brand underline underline-offset-4">mr@cedricfotso.com</a></p></div>
 						<div><Label>Localisation</Label><p className="mt-2 text-[16px]">Douala, Cameroun<br /><span className="text-muted">GMT+1, missions à distance</span></p></div>
 						<div><Label>Disponibilité</Label><p className="mt-2 text-[15px] text-muted">Prochaine fenêtre de démarrage : à la demande. Les cadrages peuvent commencer sous 2 semaines.</p></div>
 					</aside>

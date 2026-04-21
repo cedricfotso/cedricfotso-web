@@ -27,6 +27,8 @@ export type PostNode = {
 	content?: string
 	date: string
 	featuredImage?: { node: { sourceUrl: string; altText?: string } }
+	categories?: { nodes: { name: string; slug: string }[] }
+	author?: { node: { name: string } }
 }
 
 const PROJECT_FIELDS_FRAGMENT = /* GraphQL */ `
@@ -64,7 +66,7 @@ export async function getAllProjects(opts?: { format?: "etude-de-cas" | "portfol
 				}
 			) { nodes { ...ProjectFields } }
 		}
-	`, { type: opts?.typeSlug ?? null, metaArray: metaArray.length ? metaArray : null })
+	`, { variables: { type: opts?.typeSlug ?? null, metaArray: metaArray.length ? metaArray : null } })
 	return data?.projets?.nodes ?? []
 }
 
@@ -74,7 +76,7 @@ export async function getProjectBySlug(slug: string): Promise<ProjetNode | null>
 		query ProjectBySlug($slug: ID!) {
 			projet(id: $slug, idType: SLUG) { ...ProjectFields content }
 		}
-	`, { slug })
+	`, { variables: { slug } })
 	return data?.projet ?? null
 }
 
@@ -92,7 +94,7 @@ export async function getLatestPosts(limit = 3): Promise<PostNode[]> {
 				nodes { slug title excerpt date featuredImage { node { sourceUrl altText } } }
 			}
 		}
-	`, { limit })
+	`, { variables: { limit } })
 	return data?.posts?.nodes ?? []
 }
 
@@ -100,7 +102,11 @@ export async function getAllPosts(): Promise<PostNode[]> {
 	const data = await wpQuery<{ posts?: { nodes: PostNode[] } }>(/* GraphQL */ `
 		query AllPosts {
 			posts(first: 100, where: { orderby: { field: DATE, order: DESC } }) {
-				nodes { slug title excerpt date featuredImage { node { sourceUrl altText } } }
+				nodes { 
+					slug title excerpt date 
+					featuredImage { node { sourceUrl altText } }
+					categories { nodes { name slug } }
+				}
 			}
 		}
 	`)
@@ -113,9 +119,11 @@ export async function getPostBySlug(slug: string): Promise<PostNode | null> {
 			post(id: $slug, idType: SLUG) {
 				slug title excerpt content date
 				featuredImage { node { sourceUrl altText } }
+				categories { nodes { name slug } }
+				author { node { name } }
 			}
 		}
-	`, { slug })
+	`, { variables: { slug } })
 	return data?.post ?? null
 }
 
@@ -124,4 +132,4 @@ export async function getAllPostSlugs(): Promise<string[]> {
 		query AllPostSlugs { posts(first: 200) { nodes { slug } } }
 	`)
 	return (data?.posts?.nodes ?? []).map((n) => n.slug)
-}s
+}
