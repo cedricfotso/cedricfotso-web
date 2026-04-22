@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html lang="fr" className={interTight.variable}>
 			<body className="min-h-screen bg-background-1 text-foreground">
 				<GridLines />
-				<div className="relative z-10 flex min-h-screen flex-col">
+				<div className="relative z-20 flex min-h-screen flex-col">
 					<Header />
 					<main className="flex-1">{children}</main>
 					<Footer />

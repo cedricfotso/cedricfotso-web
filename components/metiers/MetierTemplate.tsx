@@ -56,8 +56,8 @@ export function MetierTemplate({ content }: Props) {
                 <div>
                   <Label>Livrables</Label>
                   <ul className="mt-6 space-y-4">
-                    {livrables.map((item) => (
-                      <li key={item.titre} className="flex gap-3">
+                    {livrables.map((item, i) => (
+                      <li key={`livrable-${i}`} className="flex gap-3">
                         <span className="text-brand mt-1 shrink-0">—</span>
                         <div>
                           <p className="font-medium text-foreground">{item.titre}</p>
@@ -79,7 +79,7 @@ export function MetierTemplate({ content }: Props) {
             <Label>Méthode</Label>
             <ol className="mt-8 space-y-6">
               {methode.map((etape, i) => (
-                <li key={etape.etape} className="flex gap-6 items-start">
+                <li key={`etape-${i}`} className="flex gap-6 items-start">
                   <span className="text-[13px] font-medium text-muted tabular-nums w-6 shrink-0 pt-0.5">
                     {String(i + 1).padStart(2, "0")}
                   </span>

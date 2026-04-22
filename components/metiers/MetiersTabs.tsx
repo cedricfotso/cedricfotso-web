@@ -1,7 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { METIERS, type MetierSlug } from "@/lib/metiers"
 
@@ -16,6 +15,7 @@ const SLUGS: MetierSlug[] = [
 
 export function MetiersTabs() {
   const pathname = usePathname()
+  const router = useRouter() // AJOUT : Initialisation du routeur manuel
 
   return (
     <nav
@@ -31,8 +31,13 @@ export function MetiersTabs() {
 
             return (
               <li key={slug} className="shrink-0">
-                <Link
+                {/* Remplacement de <Link> par une balise <a> sécurisée */}
+                <a
                   href={href}
+                  onClick={(e) => {
+                    e.preventDefault() // Empêche le navigateur de recharger toute la page
+                    router.push(href)  // Next.js gère la transition en douceur
+                  }}
                   className={cn(
                     "inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors",
                     isActive
@@ -42,7 +47,7 @@ export function MetiersTabs() {
                   aria-current={isActive ? "page" : undefined}
                 >
                   {metier.label}
-                </Link>
+                </a>
               </li>
             )
           })}

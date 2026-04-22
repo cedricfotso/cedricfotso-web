@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import { Container } from "./Container"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
@@ -28,15 +28,39 @@ const links = [
 
 export function Header() {
   const pathname = usePathname()
+  const router = useRouter() // AJOUT : Routeur manuel pour contourner le bug
   const [open, setOpen] = useState(false)
 
+  // Empêcher la page de défiler quand le menu mobile est ouvert
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [open])
+
+  // AJOUT : Fonction pour gérer la navigation mobile sans faire crasher Next.js
+  const handleMobileNav = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault() // On stoppe le comportement natif
+    setOpen(false)     // On ferme le menu
+    router.push(href)  // On navigue manuellement via le hook
+  }
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-[100] border-b border-border bg-white backdrop-blur">
       <Container>
         <div className="flex h-16 items-center justify-between">
 
           {/* Logo */}
-          <Link href="/" onClick={() => setOpen(false)} className="shrink-0">
+          <Link 
+            href="/" 
+            onClick={() => setOpen(false)}
+            className="shrink-0 rounded-md focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
+          >
             <Image
               src="/images/cedricfotso.svg"
               alt="Cédric Fotso"
@@ -56,6 +80,7 @@ export function Header() {
                     <button
                       className={cn(
                         "px-3 py-2 text-sm rounded-md transition-colors",
+                        "focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none",
                         active ? "text-foreground font-medium" : "text-muted hover:text-foreground",
                       )}
                     >
@@ -63,16 +88,22 @@ export function Header() {
                     </button>
 
                     {/* Dropdown */}
-                    <div className="absolute left-0 top-full pt-2 hidden group-hover:block z-50">
-                      <div className="bg-background border border-border rounded-xl shadow-lg p-2 w-56">
+                    <div className="absolute left-0 top-full pt-2 hidden group-hover:block z-[110]">
+                      <div className="absolute -top-2 left-0 right-0 h-4 bg-transparent" />
+                      
+                      <div className="bg-white border border-border rounded-xl shadow-lg p-2 w-56">
                         {l.subLinks.map((sub) => (
                           <Link
                             key={sub.href}
                             href={sub.href}
-                            className="block px-3 py-2 rounded-lg hover:bg-foreground/5 transition-colors"
+                            className="block px-3 py-2 rounded-lg hover:bg-brand-soft transition-colors group/item"
                           >
-                            <span className="text-sm font-medium text-foreground">{sub.label}</span>
-                            <span className="block text-xs text-muted mt-0.5">{sub.desc}</span>
+                            <span className="text-sm font-medium text-foreground group-hover/item:text-brand transition-colors">
+                              {sub.label}
+                            </span>
+                            <span className="block text-xs text-muted mt-0.5">
+                              {sub.desc}
+                            </span>
                           </Link>
                         ))}
                       </div>
@@ -87,6 +118,7 @@ export function Header() {
                   href={l.href}
                   className={cn(
                     "px-3 py-2 text-sm rounded-md transition-colors",
+                    "focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none",
                     active ? "text-foreground font-medium" : "text-muted hover:text-foreground",
                   )}
                 >
@@ -103,8 +135,9 @@ export function Header() {
 
           {/* Burger mobile */}
           <button
-            className="md:hidden text-sm font-medium text-foreground"
+            className="md:hidden text-sm font-medium text-foreground px-2 py-1 rounded-md focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
             onClick={() => setOpen(!open)}
+            aria-expanded={open}
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           >
             {open ? "Fermer" : "Menu"}
@@ -114,44 +147,54 @@ export function Header() {
 
       {/* Menu mobile */}
       {open && (
-        <div className="md:hidden border-t border-border bg-background">
-          <Container>
-            <nav className="py-6 flex flex-col gap-1">
-              {links.map((l) => (
-                <div key={l.href}>
-                  <Link
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="block py-2 text-lg font-medium text-foreground"
-                  >
-                    {l.label}
-                  </Link>
-                  {l.subLinks && (
-                    <div className="pl-4 flex flex-col gap-1 mb-2">
-                      {l.subLinks.map((sub) => (
-                        <Link
-                          key={sub.href}
-                          href={sub.href}
-                          onClick={() => setOpen(false)}
-                          className="text-sm text-muted hover:text-foreground transition-colors py-1"
-                        >
-                          {sub.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <Link
-                href="/contact"
-                onClick={() => setOpen(false)}
-                className="mt-4 text-base font-medium text-brand"
-              >
-                Me contacter →
-              </Link>
-            </nav>
-          </Container>
-        </div>
+        <>
+          {/* Overlay gris derrière le menu */}
+          <div 
+            className="fixed inset-0 top-16 z-[105] bg-foreground/10 backdrop-blur-sm md:hidden" 
+            onClick={() => setOpen(false)}
+          />
+          
+          {/* Contenu du Menu mobile */}
+          <div className="absolute top-16 left-0 right-0 z-[110] md:hidden border-t border-border bg-white/95 backdrop-blur shadow-xl pb-6 rounded-b-2xl">
+            <Container>
+              <nav className="py-6 flex flex-col gap-1">
+                {links.map((l) => (
+                  <div key={l.href}>
+                    {/* Remplacement par une balise <a> et handleMobileNav */}
+                    <a
+                      href={l.href}
+                      onClick={(e) => handleMobileNav(e, l.href)}
+                      className="block py-2 text-lg font-medium text-foreground focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none rounded-md"
+                    >
+                      {l.label}
+                    </a>
+                    {l.subLinks && (
+                      <div className="pl-4 flex flex-col gap-1 mb-2">
+                        {l.subLinks.map((sub) => (
+                          <a
+                            key={sub.href}
+                            href={sub.href}
+                            onClick={(e) => handleMobileNav(e, sub.href)}
+                            className="text-sm text-muted hover:text-foreground transition-colors py-1 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none rounded-md"
+                          >
+                            {sub.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <a
+                  href="/contact"
+                  onClick={(e) => handleMobileNav(e, "/contact")}
+                  className="mt-4 inline-block text-base font-medium text-brand focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none rounded-md"
+                >
+                  Me contacter →
+                </a>
+              </nav>
+            </Container>
+          </div>
+        </>
       )}
     </header>
   )
