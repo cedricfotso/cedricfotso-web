@@ -40,5 +40,50 @@
 	.prose-cf a { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; }
 	.prose-cf ul { margin-top: 1em; list-style: disc; padding-left: 1.25em; }
 	.prose-cf blockquote { margin-top: 1.5em; border-left: 2px solid var(--color-brand); padding-left: 1em; color: var(--color-muted); font-size: 18px; }
-	@media (max-width: 640px) { .site-container { padding-left: 16px; padding-right: 16px; } }
+	
+	.prose-article {
+    font-size: 17px;
+    line-height: 1.75;
+  }
+  .prose-article p  { margin-top: 1em; color: var(--color-foreground); }
+  .prose-article h2 { margin-top: 2em; font-size: 24px; font-weight: 500; letter-spacing: -0.015em; }
+  .prose-article h3 { margin-top: 1.5em; font-size: 20px; font-weight: 500; }
+  .prose-article a  { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; }
+  .prose-article ul { margin-top: 1em; list-style: disc; padding-left: 1.25em; }
+  .prose-article ol { margin-top: 1em; list-style: decimal; padding-left: 1.25em; }
+  .prose-article li { margin-top: 0.4em; }
+  .prose-article blockquote {
+    margin-top: 1.5em;
+    border-left: 2px solid var(--color-brand);
+    padding-left: 1em;
+    color: var(--color-muted);
+    font-size: 18px;
+  }
+  .prose-article img {
+    margin-top: 1.5em;
+    border-radius: 12px;
+    max-width: 100%;
+  }
+  .prose-article code {
+    font-size: 14px;
+    background-color: var(--color-background-2);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .prose-article pre {
+    margin-top: 1.5em;
+    background-color: var(--color-background-2);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.25em;
+    overflow-x: auto;
+  }
+  .prose-article pre code {
+    background: none;
+    border: none;
+    padding: 0;
+  }
 }
+	
+	@media (max-width: 640px) { .site-container { padding-left: 16px; padding-right: 16px; } }

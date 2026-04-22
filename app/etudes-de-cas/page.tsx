@@ -4,10 +4,12 @@ import { Section } from "@/components/ui/Section"
 import { ProjectFilter } from "@/components/projets/ProjectFilter"
 import { getAllProjects } from "@/lib/queries"
 
+// revalidate absent → ajouté : la page fetch des données dynamiques
+export const revalidate = 300
+
 export const metadata: Metadata = {
   title: "Études de cas",
-  description:
-    "Projets, refontes, systèmes de design — le détail de ce qui a été fait, pourquoi, et ce que ça a produit.",
+  description: "Projets, refontes, systèmes de design — le détail de ce qui a été fait, pourquoi, et ce que ça a produit.",
 }
 
 export default async function EtudesDeCasPage() {

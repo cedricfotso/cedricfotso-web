@@ -1,11 +1,3 @@
-const WP_GRAPHQL_URL = process.env.WP_GRAPHQL_URL!;
-
-if (!WP_GRAPHQL_URL) {
-  throw new Error(
-    "Erreur critique : WP_GRAPHQL_URL n'est pas défini dans les variables d'environnement."
-  );
-}
-
 type WpQueryOptions = {
   variables?: Record<string, unknown>
   /** ISR revalidation in seconds. Default: 1h. Set to 0 to disable cache. */
@@ -18,6 +10,13 @@ export async function wpQuery<T = unknown>(
   query: string,
   options: WpQueryOptions = {},
 ): Promise<T> {
+  const WP_GRAPHQL_URL = process.env.WP_GRAPHQL_URL
+  if (!WP_GRAPHQL_URL) {
+    throw new Error(
+      "[wpQuery] Erreur critique : WP_GRAPHQL_URL n'est pas défini dans les variables d'environnement.",
+    )
+  }
+
   const { variables, revalidate = 3600, tags } = options
 
   const res = await fetch(WP_GRAPHQL_URL, {

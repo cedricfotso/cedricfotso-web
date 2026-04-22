@@ -3,10 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Section } from "@/components/ui/Section"
-import {
-  getAllProjectSlugs,
-  getProjectBySlug,
-} from "@/lib/queries"
+import { getAllProjectSlugs, getProjectBySlug } from "@/lib/queries"
 
 export const revalidate = 300
 export const dynamicParams = true
@@ -28,6 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: projet.title,
     description: projet.tagline ?? undefined,
+    robots: { index: false, follow: false },
     openGraph: {
       title: projet.title,
       description: projet.tagline ?? undefined,
@@ -48,24 +46,21 @@ export default async function EtudeDeCasPage({ params }: Props) {
         <div className="mx-auto max-w-4xl px-6">
           <Link
             href="/etudes-de-cas"
-            className="mb-8 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline"
+            className="mb-8 inline-block text-sm text-muted underline-offset-4 hover:text-foreground hover:underline"
           >
             ← Toutes les études
           </Link>
-
           {projet.secteur ? (
-            <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
+            <p className="mb-6 text-sm uppercase tracking-widest text-muted">
               {projet.secteur}
               {projet.marche ? ` · ${projet.marche}` : ""}
             </p>
           ) : null}
-
           <h1 className="text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
             {projet.title}
           </h1>
-
           {projet.tagline ? (
-            <p className="mt-6 text-lg text-neutral-300 md:text-xl">
+            <p className="mt-6 text-lg text-muted md:text-xl">
               {projet.tagline}
             </p>
           ) : null}
@@ -74,7 +69,7 @@ export default async function EtudeDeCasPage({ params }: Props) {
 
       {projet.featuredImage?.url ? (
         <div className="mx-auto mb-16 max-w-5xl px-6">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-neutral-900">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-background-2">
             <Image
               src={projet.featuredImage.url}
               alt={projet.featuredImage.alt}
@@ -88,20 +83,19 @@ export default async function EtudeDeCasPage({ params }: Props) {
       ) : null}
 
       <Section>
-        <div className="mx-auto max-w-3xl space-y-8 text-lg text-neutral-300">
+        <div className="mx-auto max-w-3xl space-y-8 text-lg text-muted">
           <p>
             Étude de cas détaillée en cours de rédaction. Les sections
             contexte, défis, solutions et résultats seront publiées dès que
             les champs Pods correspondants seront exposés via WPGraphQL.
           </p>
-
           {projet.lienProjet ? (
             <p>
               <a
                 href={projet.lienProjet}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline underline-offset-4 hover:text-white"
+                className="underline underline-offset-4 hover:text-foreground"
               >
                 Voir le site en ligne ↗
               </a>
@@ -117,9 +111,9 @@ export default async function EtudeDeCasPage({ params }: Props) {
           </p>
           <Link
             href="/contact"
-            className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-neutral-200"
+            className="rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition hover:opacity-80"
           >
-            Discutons-en
+            Démarrer un projet
           </Link>
         </div>
       </Section>

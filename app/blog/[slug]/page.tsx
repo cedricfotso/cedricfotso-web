@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-// CORRECTION ICI : on pointe vers queries
 import { getPostBySlug, getAllPostSlugs } from "@/lib/graphql/queries";
 
 export const revalidate = 3600;
@@ -17,26 +16,25 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-
   if (!post) notFound();
 
-  const titleHtml = { __html: post.title };
+  const titleHtml   = { __html: post.title };
   const excerptHtml = { __html: post.excerpt || "" };
   const contentHtml = { __html: post.content || "" };
 
   return (
-    <main className="bg-white text-[#0A0A0A]">
+    <main>
       {/* HERO */}
       <section className="max-w-3xl mx-auto px-6 pt-32 pb-12">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-neutral-500 hover:text-[#D85A30] transition-colors mb-10"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-muted hover:text-brand transition-colors mb-10"
         >
           <span aria-hidden>←</span> Retour au journal
         </Link>
 
-        <div className="flex items-center gap-3 text-xs text-neutral-400 mb-6">
-          <time>
+        <div className="flex items-center gap-3 text-xs text-muted mb-6">
+          <time dateTime={post.date}>
             {new Date(post.date).toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "long",
@@ -46,7 +44,7 @@ export default async function BlogPostPage({
           {post.categories?.nodes?.[0] && (
             <>
               <span>·</span>
-              <span className="uppercase tracking-widest font-semibold text-[#D85A30]">
+              <span className="uppercase tracking-widest font-semibold text-brand">
                 {post.categories.nodes[0].name}
               </span>
             </>
@@ -66,7 +64,7 @@ export default async function BlogPostPage({
 
         {post.excerpt && (
           <div
-            className="text-xl text-neutral-600 leading-relaxed"
+            className="text-xl text-muted leading-relaxed"
             dangerouslySetInnerHTML={excerptHtml}
           />
         )}
@@ -75,7 +73,7 @@ export default async function BlogPostPage({
       {/* IMAGE MISE EN AVANT */}
       {post.featuredImage?.node?.sourceUrl && (
         <section className="max-w-4xl mx-auto px-6 pb-16">
-          <div className="aspect-[16/9] overflow-hidden rounded-2xl border border-[#F0EDE8]">
+          <div className="aspect-[16/9] overflow-hidden rounded-2xl border border-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.featuredImage.node.sourceUrl}
@@ -96,15 +94,15 @@ export default async function BlogPostPage({
       </article>
 
       {/* CTA */}
-      <section className="max-w-4xl mx-auto px-6 py-24 text-center border-t border-[#F0EDE8]">
+      <section className="max-w-4xl mx-auto px-6 py-24 text-center border-t border-border">
         <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-6">
           Envie de discuter d&apos;un projet ?
         </h2>
         <Link
           href="/contact"
-          className="inline-block bg-[#D85A30] text-white px-8 py-4 rounded-full text-sm font-semibold hover:bg-[#C14E27] transition-colors"
+          className="inline-block bg-brand text-white px-8 py-4 rounded-full text-sm font-semibold hover:bg-brand-hover transition-colors"
         >
-          Prendre contact
+          Démarrer un projet
         </Link>
       </section>
     </main>

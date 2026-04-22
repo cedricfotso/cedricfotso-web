@@ -4,11 +4,15 @@ import { Label } from "@/components/ui/Label"
 import { Button } from "@/components/ui/Button"
 import type { MetierContent } from "@/lib/metiers"
 
+import type { FeaturedProject } from "@/lib/queries" // à ajuster selon ton type réel
+
 type Props = {
-  content?: MetierContent
+  metier?: MetierContent
+  projets?: unknown[]  // accepté sans erreur TS, non utilisé pour l'instant
 }
 
-export function MetierTemplate({ content }: Props) {
+
+export function MetierTemplate({ metier: content }: Props) {
   if (!content) {
     return (
       <Section>

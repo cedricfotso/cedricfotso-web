@@ -22,10 +22,10 @@ export function DerniersEcrits({ posts }: Props) {
             Derniers écrits
           </h2>
           <Link
-            href="/blog"
-            className="text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline"
+            href="/ecrits"
+            className="text-sm text-muted underline-offset-4 hover:text-foreground hover:underline"
           >
-            Tout le blog →
+            Tous les écrits →
           </Link>
         </div>
 
@@ -33,14 +33,14 @@ export function DerniersEcrits({ posts }: Props) {
           {posts.map((p) => (
             <li key={p.slug}>
               <Link
-                href={`/blog/${p.slug}`}
+                href={`/ecrits/${p.slug}`}
                 className="group flex flex-col gap-2 py-6 transition md:flex-row md:items-baseline md:justify-between md:gap-8"
               >
-                <span className="text-lg font-medium tracking-tight transition group-hover:text-white">
+                <span className="text-lg font-medium tracking-tight transition group-hover:text-foreground">
                   {p.title}
                 </span>
                 {p.date ? (
-                  <time className="shrink-0 text-sm text-neutral-500">{p.date}</time>
+                  <time className="shrink-0 text-sm text-muted">{p.date}</time>
                 ) : null}
               </Link>
             </li>

@@ -16,9 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const p = await getPostBySlug(slug)
   if (!p) return { title: "Article introuvable" }
-
   const description = truncate(stripHtml(p.excerpt ?? p.content ?? ""), 160)
-
   return {
     title: p.title,
     description,
@@ -36,7 +34,6 @@ export default async function EcritPage({ params }: Props) {
   const p = await getPostBySlug(slug)
   if (!p) notFound()
 
-  // Pas de double accolade en JSX → on prépare l'objet ici.
   const articleHtml = { __html: p.content ?? "" }
 
   return (
@@ -45,23 +42,20 @@ export default async function EcritPage({ params }: Props) {
         <div className="mx-auto max-w-3xl px-6">
           <Link
             href="/ecrits"
-            className="mb-8 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline"
+            className="mb-8 inline-block text-sm text-muted underline-offset-4 hover:text-foreground hover:underline"
           >
             ← Tous les écrits
           </Link>
-
           {p.date ? (
-            <p className="mb-6 text-sm uppercase tracking-widest text-neutral-400">
-              {formatDateFR(p.date)}
+            <p className="mb-6 text-sm uppercase tracking-widest text-muted">
+              <time dateTime={p.date}>{formatDateFR(p.date)}</time>
             </p>
           ) : null}
-
           <h1 className="text-balance text-4xl font-semibold leading-[1.1] tracking-tight md:text-6xl">
             {p.title}
           </h1>
-
           {p.excerpt ? (
-            <p className="mt-6 text-lg text-neutral-300 md:text-xl">
+            <p className="mt-6 text-lg text-muted md:text-xl">
               {stripHtml(p.excerpt)}
             </p>
           ) : null}
@@ -70,7 +64,7 @@ export default async function EcritPage({ params }: Props) {
 
       {p.featuredImage?.url ? (
         <div className="mx-auto mb-16 max-w-5xl px-6">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-neutral-900">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-background-2">
             <Image
               src={p.featuredImage.url}
               alt={p.featuredImage.alt}
