@@ -3,6 +3,7 @@ import { Inter_Tight } from "next/font/google"
 import { GridLines } from "@/components/layout/GridLines"
 import { Header } from "@/components/layout/Header"
 import { Footer } from "@/components/layout/Footer"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
 const interTight = Inter_Tight({
